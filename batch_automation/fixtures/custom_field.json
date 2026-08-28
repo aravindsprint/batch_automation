@@ -1,0 +1,90 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "Purchase Receipt Item-custom_suppliers_batch_no",
+    "dt": "Purchase Receipt Item",
+    "fieldname": "custom_suppliers_batch_no",
+    "label": "Supplier's Batch No",
+    "fieldtype": "Data",
+    "insert_after": "batch_no",
+    "module": "Batch Automation"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Purchase Receipt Item-custom_computed_batch_no",
+    "dt": "Purchase Receipt Item",
+    "fieldname": "custom_computed_batch_no",
+    "label": "Computed Batch No (Preview)",
+    "fieldtype": "Data",
+    "read_only": 1,
+    "insert_after": "custom_suppliers_batch_no",
+    "module": "Batch Automation"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Subcontracting Receipt Item-custom_suppliers_batch_no",
+    "dt": "Subcontracting Receipt Item",
+    "fieldname": "custom_suppliers_batch_no",
+    "label": "Supplier's Batch No",
+    "fieldtype": "Data",
+    "insert_after": "batch_no",
+    "module": "Batch Automation"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Subcontracting Receipt Item-custom_computed_batch_no",
+    "dt": "Subcontracting Receipt Item",
+    "fieldname": "custom_computed_batch_no",
+    "label": "Computed Batch No (Preview)",
+    "fieldtype": "Data",
+    "read_only": 1,
+    "insert_after": "custom_suppliers_batch_no",
+    "module": "Batch Automation"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Stock Entry Detail-custom_computed_batch_no",
+    "dt": "Stock Entry Detail",
+    "fieldname": "custom_computed_batch_no",
+    "label": "Computed Batch No (Preview)",
+    "fieldtype": "Data",
+    "read_only": 1,
+    "insert_after": "batch_no",
+    "module": "Batch Automation"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Batch-custom_dyeing_work_order",
+    "dt": "Batch",
+    "fieldname": "custom_dyeing_work_order",
+    "label": "Dyeing Work Order",
+    "fieldtype": "Link",
+    "options": "Work Order",
+    "insert_after": "reference_name",
+    "module": "Batch Automation",
+    "description": "Traced-back Work Order where dyeing happened. Stamped automatically; do not set manually."
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Batch-custom_dyeing_purchase_order",
+    "dt": "Batch",
+    "fieldname": "custom_dyeing_purchase_order",
+    "label": "Dyeing Purchase Order",
+    "fieldtype": "Link",
+    "options": "Purchase Order",
+    "insert_after": "custom_dyeing_work_order",
+    "module": "Batch Automation",
+    "description": "Traced-back Purchase Order (Process = Dyeing) where dyeing was subcontracted. Stamped automatically; do not set manually."
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "Supplier-custom_supplier_code",
+    "dt": "Supplier",
+    "fieldname": "custom_supplier_code",
+    "label": "Supplier Code",
+    "fieldtype": "Data",
+    "insert_after": "supplier_name",
+    "module": "Batch Automation",
+    "description": "TODO: confirm this doesn't duplicate an existing field before deploying \u2014 check Supplier doctype first."
+  }
+]

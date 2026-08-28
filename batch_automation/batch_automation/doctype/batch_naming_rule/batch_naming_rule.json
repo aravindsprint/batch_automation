@@ -1,0 +1,70 @@
+{
+  "doctype": "DocType",
+  "name": "Batch Naming Rule",
+  "module": "Batch Automation",
+  "custom": 0,
+  "istable": 0,
+  "issingle": 0,
+  "autoname": "field:criteria",
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "engine": "InnoDB",
+  "fields": [
+    {
+      "fieldname": "criteria",
+      "fieldtype": "Data",
+      "label": "Criteria",
+      "reqd": 1,
+      "unique": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "item_type",
+      "fieldtype": "Data",
+      "label": "Item Type",
+      "reqd": 1,
+      "in_list_view": 1,
+      "description": "Must match a value used in Item.item_type"
+    },
+    {
+      "fieldname": "process_stage",
+      "fieldtype": "Data",
+      "label": "Process Stage",
+      "reqd": 1,
+      "in_list_view": 1,
+      "description": "Must match a value used in Purchase Order.process / Work Order Operation.operation"
+    },
+    {
+      "fieldname": "mode",
+      "fieldtype": "Select",
+      "label": "Mode",
+      "options": "Purchase\nSubcontract\nInhouse",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "origin",
+      "fieldtype": "Select",
+      "label": "Origin (only if item_type+process+mode isn't unique)",
+      "options": "\nWork Order\nPurchase Order",
+      "in_list_view": 1,
+      "description": "Leave blank unless two rules share the same Item Type + Process + Mode (e.g. fabric inspected inhouse, whether dyed inhouse or via subcontract) \u2014 then set this to disambiguate by which reference the traced batch carries."
+    },
+    {
+      "fieldname": "template",
+      "fieldtype": "Data",
+      "label": "Template",
+      "reqd": 1,
+      "description": "Token string, e.g. {INDENT}/{SUPPLIER_CODE}/{SUPPLIERS_BATCH_NO}-C{SEQ}"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    }
+  ]
+}

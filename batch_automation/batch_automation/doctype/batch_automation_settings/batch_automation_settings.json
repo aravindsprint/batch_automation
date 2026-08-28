@@ -1,0 +1,25 @@
+{
+  "doctype": "DocType",
+  "name": "Batch Automation Settings",
+  "module": "Batch Automation",
+  "custom": 0,
+  "istable": 0,
+  "issingle": 1,
+  "engine": "InnoDB",
+  "fields": [
+    {
+      "fieldname": "enabled",
+      "fieldtype": "Check",
+      "label": "Enable Auto Batch Creation",
+      "default": "1",
+      "description": "Global on/off switch for auto batch number generation on Purchase Receipt, Subcontracting Receipt, and Stock Entry (Manufacture). When off, none of the Batch Naming Rule logic runs — behaves as if this app weren't installed at all, on every document, regardless of individual rule setup."
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}
