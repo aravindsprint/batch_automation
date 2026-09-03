@@ -66,7 +66,7 @@ def get_mode(doc):
 
 
 def get_item_type(item_code):
-	return frappe.db.get_value("Item", item_code, "item_type")
+	return frappe.db.get_value("Item", item_code, "custom_item_type")
 
 
 def get_process_for_purchase_receipt(pr_item_row, pr_doc):

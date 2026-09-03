@@ -24,7 +24,7 @@
       "label": "Item Type",
       "reqd": 1,
       "in_list_view": 1,
-      "description": "Must match a value used in Item.item_type"
+      "description": "Must match a value used in Item.custom_item_type"
     },
     {
       "fieldname": "process_stage",
