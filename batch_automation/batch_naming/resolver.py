@@ -90,6 +90,30 @@ def get_process_for_subcontracting_receipt(scr_item_row, scr_doc):
 	return frappe.db.get_value("Purchase Order", po, "process")
 
 
+# Confirmed by Aravind (2026-09-04, dyeing_related_operations_for_review.csv):
+# every one of the 69 dye-related Work Order Operations on file — including
+# compound ones like "DYEING + STENTER FINISHING" and "KNITTING+DYEING+
+# STENTER FINISHING" — should count as the dyeing stage for lineage-tracing
+# purposes. Rather than maintain an enumerated list that goes stale the
+# next time ops adds a new compound operation name, this is a substring
+# match: any operation containing "DYEING" is treated as the dyeing source.
+#
+# If a future operation should be excluded from this (e.g. one that merely
+# mentions dyeing but isn't actually the dyeing step itself), list its
+# uppercased name here explicitly rather than trying to special-case the
+# substring logic.
+DYEING_OPERATION_EXCLUSIONS = set()
+
+
+def is_dyeing_operation(process):
+	if not process:
+		return False
+	process = process.upper()
+	if process in DYEING_OPERATION_EXCLUSIONS:
+		return False
+	return "DYEING" in process
+
+
 def get_process_for_stock_entry(se_doc):
 	# Confirmed: use the last row of the Work Order's Operations table
 	# (in practice there is normally only one row).
@@ -217,7 +241,7 @@ def resolve_dyeing_purchase_order(scr_item_row, scr_doc):
 	if not po:
 		return None
 	process = frappe.db.get_value("Purchase Order", po, "process")
-	if process == "Dyeing":
+	if process and process.upper() == "DYEING":
 		return po
 	return None
 
@@ -235,7 +259,7 @@ def compute_dyeing_trace(doc, item_row):
 	"""
 	if doc.doctype == "Stock Entry":
 		process = get_process_for_stock_entry(doc)
-		if process == "Dyeing":
+		if is_dyeing_operation(process):
 			return doc.get("work_order"), None
 		return resolve_consumed_batch_stock_entry(doc, item_row)
 	elif doc.doctype == "Subcontracting Receipt":
