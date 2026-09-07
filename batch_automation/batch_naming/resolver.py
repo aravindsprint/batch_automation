@@ -77,6 +77,40 @@ def get_process_for_purchase_receipt(pr_item_row, pr_doc):
 	return frappe.db.get_value("Purchase Order", po, "process")
 
 
+# Keyword-based normalization applied to a raw Purchase Order.process /
+# Work Order Operation.operation string before it's matched against
+# Batch Naming Rule.process_stage. Real process values are routinely
+# compound/free-text rather than a single plain stage name — e.g.
+# "KNITTING + POLYBAG COVER PACKING" or "HOT WASHING + STENTER FINISHING" —
+# and get_rule()'s exact-match filter would otherwise silently skip these
+# (see: DRYER, HOT WASHING + STENTER FINISHING, KNITTING + POLYBAG COVER
+# PACKING incidents, 2026-09).
+#
+# Checked as a case-insensitive substring, in listed order — first match
+# wins, so list more specific keywords before more general ones if that
+# ever matters. Anything not matching a keyword here falls through
+# unchanged, preserving today's exact-match behavior for every stage not
+# yet added to this list (Dyeing, DRYER, Finishing, Inspection, Peach
+# Finishing, Heat Setting, etc. all still require an exact
+# Batch Naming Rule.process_stage match today).
+#
+# Confirmed by Aravind (2026-09-07): any process containing "KNITTING"
+# should be treated as the Knitting stage.
+PROCESS_STAGE_KEYWORDS = [
+	("KNITTING", "Knitting"),
+]
+
+
+def normalize_process_stage(raw_process):
+	if not raw_process:
+		return raw_process
+	upper = raw_process.upper()
+	for keyword, stage in PROCESS_STAGE_KEYWORDS:
+		if keyword in upper:
+			return stage
+	return raw_process
+
+
 def get_process_for_subcontracting_receipt(scr_item_row, scr_doc):
 	# Confirmed: Subcontracting Order doesn't carry its own process value —
 	# fetch it from the linked Purchase Order instead.
@@ -350,7 +384,7 @@ def compute_seq(doc, rule_name, current_row):
 		row_item_type = get_item_type(row.item_code)
 		# Re-derive the same (item_type, process, mode) match for every row —
 		# cheap enough at typical row counts, and keeps this self-contained.
-		process = (
+		process = normalize_process_stage(
 			get_process_for_purchase_receipt(row, doc)
 			if doc.doctype == "Purchase Receipt"
 			else get_process_for_subcontracting_receipt(row, doc)
@@ -434,7 +468,7 @@ def compute_preview(doc, method=None):
 			continue
 
 		item_type = get_item_type(row.item_code)
-		process = (
+		process = normalize_process_stage(
 			get_process_for_purchase_receipt(row, doc)
 			if doc.doctype == "Purchase Receipt"
 			else get_process_for_subcontracting_receipt(row, doc)
@@ -467,7 +501,7 @@ def lock_batches(doc, method=None):
 			continue  # already set (manual override) — don't touch it
 
 		item_type = get_item_type(row.item_code)
-		process = (
+		process = normalize_process_stage(
 			get_process_for_purchase_receipt(row, doc)
 			if doc.doctype == "Purchase Receipt"
 			else get_process_for_subcontracting_receipt(row, doc)
