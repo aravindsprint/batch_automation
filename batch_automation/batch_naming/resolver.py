@@ -311,13 +311,11 @@ def resolve_tokens(doc, item_row, rule, seq_value, dyeing_wo, dyeing_po):
 	tokens["INDENT"] = item_row.get("project") or doc.get("project") or ""
 
 	# SUPPLIER CODE — via the linked Purchase Order's supplier
-	# TODO: confirm the actual fieldname holding the supplier's short code
-	# (placeholder: Supplier.custom_supplier_code)
 	po_for_supplier = item_row.get("purchase_order") or doc.get("purchase_order")
 	if po_for_supplier:
 		supplier = frappe.db.get_value("Purchase Order", po_for_supplier, "supplier")
 		if supplier:
-			tokens["SUPPLIER_CODE"] = frappe.db.get_value("Supplier", supplier, "custom_supplier_code") or ""
+			tokens["SUPPLIER_CODE"] = frappe.db.get_value("Supplier", supplier, "custom_supplier_alpha_code") or ""
 
 	# SUPPLIER'S BATCH NO — new field entered at receipt
 	tokens["SUPPLIERS_BATCH_NO"] = item_row.get("custom_suppliers_batch_no") or ""
@@ -341,7 +339,7 @@ def resolve_tokens(doc, item_row, rule, seq_value, dyeing_wo, dyeing_po):
 	if dyeing_po:
 		dyeing_supplier = frappe.db.get_value("Purchase Order", dyeing_po, "supplier")
 		tokens["DYEING_SUPPLIER_CODE"] = (
-			frappe.db.get_value("Supplier", dyeing_supplier, "custom_supplier_code") if dyeing_supplier else ""
+			frappe.db.get_value("Supplier", dyeing_supplier, "custom_supplier_alpha_code") if dyeing_supplier else ""
 		) or ""
 	else:
 		tokens["DYEING_SUPPLIER_CODE"] = ""

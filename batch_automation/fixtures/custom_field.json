@@ -78,13 +78,13 @@
   },
   {
     "doctype": "Custom Field",
-    "name": "Supplier-custom_supplier_code",
+    "name": "Supplier-custom_supplier_alpha_code",
     "dt": "Supplier",
-    "fieldname": "custom_supplier_code",
-    "label": "Supplier Code",
+    "fieldname": "custom_supplier_alpha_code",
+    "label": "Supplier Alpha Code",
     "fieldtype": "Data",
     "insert_after": "supplier_name",
     "module": "Batch Automation",
-    "description": "TODO: confirm this doesn't duplicate an existing field before deploying \u2014 check Supplier doctype first."
+    "description": "Short alpha code used in batch-naming templates (e.g. {SUPPLIER_CODE}, {DYEING_SUPPLIER_CODE}). Auto-generated on Supplier creation; do not set manually."
   }
 ]
