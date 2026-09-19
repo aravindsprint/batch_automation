@@ -10,6 +10,8 @@ TODOs are left wherever a design decision depends on data we haven't
 confirmed against the real system yet (see SETUP.md, section 6).
 """
 
+import re
+
 import frappe
 from frappe.utils import cstr
 
@@ -69,12 +71,35 @@ def get_item_type(item_code):
 	return frappe.db.get_value("Item", item_code, "custom_item_type")
 
 
+# Item types whose purchase-mode rules are split into Greige / Finished /
+# Inspected stages. Purchase Order.process is a Link to Operation and the only
+# purchase Operation that exists is plain "PURCHASE", so for these item types
+# the stage has to be worked out from the item instead (see below).
+PURCHASE_STAGED_ITEM_TYPES = ("Fabric", "Collar", "Cuff")
+
+
 def get_process_for_purchase_receipt(pr_item_row, pr_doc):
 	# process lives on the Purchase Order, not the Purchase Receipt itself
 	po = pr_item_row.get("purchase_order") or pr_doc.get("purchase_order")
 	if not po:
 		return None
-	return frappe.db.get_value("Purchase Order", po, "process")
+	raw = frappe.db.get_value("Purchase Order", po, "process")
+
+	# Plain "PURCHASE" stands for Greige / Inspected / Finished Purchase
+	# (Aravind, 2026-09-19). Pick the stage from the item:
+	#   item code contains "GREIGE" -> "Greige Purchase"
+	#   otherwise                   -> "Finished Purchase"
+	# "Inspected Purchase" is never chosen here - nothing on a Purchase Receipt
+	# says whether the goods were inspected. Yarn, Chemicals and every
+	# non-PURCHASE process are returned unchanged.
+	if raw and cstr(raw).strip().upper() == "PURCHASE":
+		item_code = pr_item_row.get("item_code") or ""
+		if get_item_type(item_code) in PURCHASE_STAGED_ITEM_TYPES:
+			if "GREIGE" in item_code.upper():
+				return "Greige Purchase"
+			return "Finished Purchase"
+
+	return raw
 
 
 # Keyword-based normalization applied to a raw Purchase Order.process /
@@ -100,11 +125,26 @@ PROCESS_STAGE_KEYWORDS = [
 	("KNITTING", "Knitting"),
 ]
 
+# Exact (whole-string, case-insensitive) mappings, checked BEFORE the keyword
+# list above. Used where a plain operation name is unambiguous but a
+# substring match would wrongly swallow compound operations too - e.g.
+# "DYEING + STENTER FINISHING" must NOT be treated as plain Finishing.
+#
+# Confirmed by Aravind (2026-09-19): the plain "STENTER" operation is the
+# Finishing stage. Compound operations that merely contain STENTER are left
+# unmapped until their stage is decided.
+PROCESS_STAGE_EXACT = {
+	"STENTER": "Finishing",
+}
+
 
 def normalize_process_stage(raw_process):
 	if not raw_process:
 		return raw_process
 	upper = raw_process.upper()
+	exact = PROCESS_STAGE_EXACT.get(upper.strip())
+	if exact:
+		return exact
 	for keyword, stage in PROCESS_STAGE_KEYWORDS:
 		if keyword in upper:
 			return stage
@@ -225,8 +265,24 @@ def resolve_consumed_batch_stock_entry(se_doc, produced_row):
 	Review against a real multi-input Dyeing/Finishing Stock Entry.
 	"""
 	for row in se_doc.items:
-		if row.s_warehouse and not row.t_warehouse and row.batch_no:
-			wo_ref, po_ref = get_dyeing_refs_from_batch(row.batch_no)
+		if not (row.s_warehouse and not row.t_warehouse):
+			continue
+
+		# Consumed rows usually keep their batch inside a Serial and Batch
+		# Bundle and leave the plain batch_no field empty (confirmed against
+		# MF/26/25557), so look in the bundle too - same as the Subcontracting
+		# Receipt path does.
+		batch_nos = []
+		if row.get("batch_no"):
+			batch_nos.append(row.batch_no)
+		elif row.get("serial_and_batch_bundle"):
+			bundle = frappe.get_doc("Serial and Batch Bundle", row.serial_and_batch_bundle)
+			for entry in bundle.entries:
+				if entry.batch_no and entry.batch_no not in batch_nos:
+					batch_nos.append(entry.batch_no)
+
+		for batch_no in batch_nos:
+			wo_ref, po_ref = get_dyeing_refs_from_batch(batch_no)
 			if wo_ref or po_ref:
 				return wo_ref, po_ref
 	return None, None
@@ -397,6 +453,36 @@ def compute_seq(doc, rule_name, current_row):
 	return count
 
 
+# If True, a template token that resolves to an empty value stops the
+# document with an error (validate AND submit). If False (default), the row is
+# simply left without an auto-generated batch and a warning is shown - the
+# document can still be saved/submitted the way it works without this app.
+BLOCK_ON_EMPTY_TOKEN = False
+
+
+def get_empty_tokens(template, tokens):
+	"""Names of {TOKENS} used by the template whose value came back empty.
+
+	Only tokens that exist in `tokens` are checked - a token that isn't wired up
+	at all is still caught (loudly) by build_batch_name().
+	"""
+	empty = []
+	for name in re.findall(r"\{([A-Z_]+)\}", template or ""):
+		if name in tokens and not cstr(tokens[name]).strip() and name not in empty:
+			empty.append(name)
+	return empty
+
+
+def warn_empty_tokens(row, rule, empty):
+	msg = (
+		f"Row {row.idx} ({row.item_code}): Batch No was not auto-generated - "
+		f"'{rule.name}' needs {', '.join(empty)}, which could not be resolved."
+	)
+	if BLOCK_ON_EMPTY_TOKEN:
+		frappe.throw(msg)
+	frappe.msgprint(msg, title="Batch automation", indicator="orange", alert=True)
+
+
 def build_batch_name(template, tokens):
 	name = template
 	for token, value in tokens.items():
@@ -481,6 +567,11 @@ def compute_preview(doc, method=None):
 
 		seq = compute_seq(doc, rule.name, row) if "{SEQ}" in rule.template else None
 		tokens = resolve_tokens(doc, row, rule, seq, dyeing_wo, dyeing_po)
+		empty = get_empty_tokens(rule.template, tokens)
+		if empty:
+			row.custom_computed_batch_no = ""
+			warn_empty_tokens(row, rule, empty)
+			continue
 		row.custom_computed_batch_no = build_batch_name(rule.template, tokens)
 
 
@@ -514,6 +605,10 @@ def lock_batches(doc, method=None):
 
 		seq = compute_seq(doc, rule.name, row) if "{SEQ}" in rule.template else None
 		tokens = resolve_tokens(doc, row, rule, seq, dyeing_wo, dyeing_po)
+		empty = get_empty_tokens(rule.template, tokens)
+		if empty:
+			warn_empty_tokens(row, rule, empty)
+			continue  # don't create a malformed Batch such as "PROJ/PSS/-F"
 		batch_id = build_batch_name(rule.template, tokens)
 
 		row.batch_no = get_or_create_batch(
