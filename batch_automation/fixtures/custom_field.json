@@ -16,7 +16,7 @@
     "fieldname": "custom_computed_batch_no",
     "label": "Computed Batch No (Preview)",
     "fieldtype": "Data",
-    "read_only": 1,
+    "read_only": 0,
     "insert_after": "custom_suppliers_batch_no",
     "module": "Batch Automation"
   },
@@ -37,7 +37,7 @@
     "fieldname": "custom_computed_batch_no",
     "label": "Computed Batch No (Preview)",
     "fieldtype": "Data",
-    "read_only": 1,
+    "read_only": 0,
     "insert_after": "custom_suppliers_batch_no",
     "module": "Batch Automation"
   },
@@ -48,7 +48,7 @@
     "fieldname": "custom_computed_batch_no",
     "label": "Computed Batch No (Preview)",
     "fieldtype": "Data",
-    "read_only": 1,
+    "read_only": 0,
     "insert_after": "batch_no",
     "module": "Batch Automation"
   },
