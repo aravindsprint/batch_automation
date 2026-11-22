@@ -138,6 +138,26 @@ PROCESS_STAGE_EXACT = {
 }
 
 
+# Operations that name a stage in other words. Used only when no rule exists for the
+# operation itself, so an item type with rules of its own for the raw operation (e.g. Collar /
+# Cuff "DRYER") keeps them. Confirmed by Aravind (2026-11-22): DOUBLE DYEING and RE DYEING
+# name the dyed batch like DYEING; DRYER job work names the finished batch like STENTER.
+PROCESS_STAGE_ALIASES = {
+	"DOUBLE DYEING": "Dyeing",
+	"RE DYEING": "Dyeing",
+	"DRYER": "Finishing",
+}
+
+
+def find_rule(item_type, process, mode, origin=None):
+	"""get_rule for the process, else for the stage its alias names (PROCESS_STAGE_ALIASES)."""
+	rule = get_rule(item_type, process, mode, origin)
+	if rule or not process:
+		return rule
+	alias = PROCESS_STAGE_ALIASES.get(cstr(process).strip().upper())
+	return get_rule(item_type, alias, mode, origin) if alias else None
+
+
 def normalize_process_stage(raw_process):
 	if not raw_process:
 		return raw_process
@@ -561,7 +581,7 @@ def compute_preview(doc, method=None):
 		)
 		dyeing_wo, dyeing_po = compute_dyeing_trace(doc, row)
 		origin = "Work Order" if dyeing_wo else "Purchase Order" if dyeing_po else None
-		rule = get_rule(item_type, process, mode, origin)
+		rule = find_rule(item_type, process, mode, origin)
 		if not rule:
 			continue
 
@@ -599,7 +619,7 @@ def lock_batches(doc, method=None):
 		)
 		dyeing_wo, dyeing_po = compute_dyeing_trace(doc, row)
 		origin = "Work Order" if dyeing_wo else "Purchase Order" if dyeing_po else None
-		rule = get_rule(item_type, process, mode, origin)
+		rule = find_rule(item_type, process, mode, origin)
 		if not rule:
 			continue
 
