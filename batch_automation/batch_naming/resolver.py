@@ -549,6 +549,13 @@ def build_batch_name(template, tokens):
 # Batch creation (idempotent)
 # ---------------------------------------------------------------------------
 
+def co_product_batch_name(batch_id, item_code):
+	"""Batch name for a second output of the same entry whose rule gives the same name as the
+	first: the name plus the item's code (the part before the first "/"), e.g.
+	"PORTAL/26/19/PSS/13103-D" -> "PORTAL/26/19/PSS/13103-D/DKF12231"."""
+	return f"{batch_id}/{cstr(item_code).split('/')[0]}"
+
+
 def get_or_create_batch(item_code, batch_id, dyeing_work_order=None, dyeing_purchase_order=None):
 	if frappe.db.exists("Batch", batch_id):
 		return batch_id
@@ -607,7 +614,12 @@ def compute_preview(doc, method=None):
 			row.custom_computed_batch_no = ""
 			warn_empty_tokens(row, rule, empty)
 			continue
-		row.custom_computed_batch_no = build_batch_name(rule.template, tokens)
+		name = build_batch_name(rule.template, tokens)
+		# same name as an earlier output row of this entry for another item -> co-product name
+		if any(r is not row and r.item_code != row.item_code and r.get("custom_computed_batch_no") == name
+		       for r in eligible_rows(doc)):
+			name = co_product_batch_name(name, row.item_code)
+		row.custom_computed_batch_no = name
 
 
 def lock_batches(doc, method=None):
@@ -637,6 +649,14 @@ def lock_batches(doc, method=None):
 		batch_id = build_batch_name(rule.template, tokens)
 
 		existing_item = frappe.db.get_value("Batch", batch_id, "item")
+		if existing_item and existing_item != row.item_code and existing_item in {
+			r.item_code for r in eligible_rows(doc) if r is not row
+		}:
+			# Two outputs of the same entry under one rule (fabric + rib dyed together:
+			# both Fabric, so both get "{...}-D"): the second item gets its own batch,
+			# named after its item code, instead of none.
+			batch_id = co_product_batch_name(batch_id, row.item_code)
+			existing_item = frappe.db.get_value("Batch", batch_id, "item")
 		if existing_item and existing_item != row.item_code:
 			# Never hand one item's batch to another item - ERPNext would reject
 			# the submit. Leave Batch No empty so the user can resolve it.
