@@ -636,6 +636,17 @@ def lock_batches(doc, method=None):
 			continue  # don't create a malformed Batch such as "PROJ/PSS/-F"
 		batch_id = build_batch_name(rule.template, tokens)
 
+		existing_item = frappe.db.get_value("Batch", batch_id, "item")
+		if existing_item and existing_item != row.item_code:
+			# Never hand one item's batch to another item - ERPNext would reject
+			# the submit. Leave Batch No empty so the user can resolve it.
+			frappe.msgprint(
+				f"Row {row.idx} ({row.item_code}): Batch No was not auto-generated - "
+				f"'{batch_id}' already belongs to item {existing_item}.",
+				title="Batch automation", indicator="orange", alert=True,
+			)
+			continue
+
 		row.batch_no = get_or_create_batch(
 			row.item_code, batch_id, dyeing_work_order=dyeing_wo, dyeing_purchase_order=dyeing_po
 		)
