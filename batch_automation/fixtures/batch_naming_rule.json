@@ -59,7 +59,7 @@
     "criteria": "Greige Collar Subcontract Knitting",
     "item_type": "Collar",
     "mode": "Subcontract",
-    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-C{SEQ}",
     "process_stage": "Knitting"
   },
   {
@@ -68,7 +68,7 @@
     "criteria": "Greige Cuff Subcontract Knitting",
     "item_type": "Cuff",
     "mode": "Subcontract",
-    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-U{SEQ}",
     "process_stage": "Knitting"
   },
   {
