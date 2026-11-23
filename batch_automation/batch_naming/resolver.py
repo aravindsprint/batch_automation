@@ -246,8 +246,15 @@ def get_rule(item_type, process, mode, origin=None):
 	# the traced batch carries (e.g. fabric inspected inhouse, whether
 	# dyed inhouse or via subcontract). Disambiguate using origin.
 	for m in matches:
-		if m.origin == origin:
+		if (m.origin or None) == (origin or None):
 			return frappe.get_cached_doc("Batch Naming Rule", m.name)
+
+	# No row carries this exact origin: fall back to the single general
+	# (blank-origin) row, e.g. a subcontract-dyed collar (origin "Purchase
+	# Order") going to "Finished Collar Subcontracting".
+	general = [m for m in matches if not m.origin]
+	if len(general) == 1:
+		return frappe.get_cached_doc("Batch Naming Rule", general[0].name)
 
 	frappe.throw(
 		f"Multiple Batch Naming Rule rows match item_type={item_type}, "
@@ -388,10 +395,12 @@ def resolve_tokens(doc, item_row, rule, seq_value, dyeing_wo, dyeing_po):
 
 	# SUPPLIER CODE — via the linked Purchase Order's supplier
 	po_for_supplier = item_row.get("purchase_order") or doc.get("purchase_order")
-	if po_for_supplier:
-		supplier = frappe.db.get_value("Purchase Order", po_for_supplier, "supplier")
-		if supplier:
-			tokens["SUPPLIER_CODE"] = frappe.db.get_value("Supplier", supplier, "custom_supplier_alpha_code") or ""
+	if not po_for_supplier and item_row.get("subcontracting_order"):
+		po_for_supplier = frappe.db.get_value("Subcontracting Order", item_row.subcontracting_order, "purchase_order")
+	supplier = (frappe.db.get_value("Purchase Order", po_for_supplier, "supplier") if po_for_supplier else None) or doc.get("supplier")
+	tokens["SUPPLIER_CODE"] = (
+		frappe.db.get_value("Supplier", supplier, "custom_supplier_alpha_code") if supplier else ""
+	) or ""
 
 	# SUPPLIER'S BATCH NO — new field entered at receipt
 	tokens["SUPPLIERS_BATCH_NO"] = item_row.get("custom_suppliers_batch_no") or ""
@@ -451,22 +460,38 @@ def row_matches_rule(item_type, process, mode, rule_name):
 	return rule_name in names
 
 
+def get_process(doc, row):
+	if doc.doctype == "Purchase Receipt":
+		raw = get_process_for_purchase_receipt(row, doc)
+	elif doc.doctype == "Subcontracting Receipt":
+		raw = get_process_for_subcontracting_receipt(row, doc)
+	else:
+		raw = get_process_for_stock_entry(doc)
+	return normalize_process_stage(raw)
+
+
+def resolve_rule_for_row(doc, row, mode):
+	"""(rule, dyeing_wo, dyeing_po) for one row - the single place rule selection happens."""
+	item_type = get_item_type(row.item_code)
+	process = get_process(doc, row)
+	dyeing_wo, dyeing_po = compute_dyeing_trace(doc, row)
+	origin = "Work Order" if dyeing_wo else "Purchase Order" if dyeing_po else None
+	return find_rule(item_type, process, mode, origin), dyeing_wo, dyeing_po
+
+
 def compute_seq(doc, rule_name, current_row):
-	"""Count this row's position among rows on this doc matched to the same rule."""
+	"""
+	Position of this row among the batch-target rows on this doc that resolve
+	to the same rule. Consumed (input) rows on a Stock Entry and items without
+	has_batch_no are not counted, and aliases/origin are honoured.
+	"""
+	mode = get_mode(doc)
 	count = 0
-	for row in doc.items:
-		row_item_type = get_item_type(row.item_code)
-		# Re-derive the same (item_type, process, mode) match for every row —
-		# cheap enough at typical row counts, and keeps this self-contained.
-		process = normalize_process_stage(
-			get_process_for_purchase_receipt(row, doc)
-			if doc.doctype == "Purchase Receipt"
-			else get_process_for_subcontracting_receipt(row, doc)
-			if doc.doctype == "Subcontracting Receipt"
-			else get_process_for_stock_entry(doc)
-		)
-		mode = get_mode(doc)
-		if row_matches_rule(row_item_type, process, mode, rule_name):
+	for row in eligible_rows(doc):
+		if not frappe.db.get_value("Item", row.item_code, "has_batch_no"):
+			continue
+		rule, _, _ = resolve_rule_for_row(doc, row, mode)
+		if rule and rule.name == rule_name:
 			count += 1
 			if row.name == current_row.name:
 				return count
@@ -571,17 +596,7 @@ def compute_preview(doc, method=None):
 		if not frappe.db.get_value("Item", row.item_code, "has_batch_no"):
 			continue
 
-		item_type = get_item_type(row.item_code)
-		process = normalize_process_stage(
-			get_process_for_purchase_receipt(row, doc)
-			if doc.doctype == "Purchase Receipt"
-			else get_process_for_subcontracting_receipt(row, doc)
-			if doc.doctype == "Subcontracting Receipt"
-			else get_process_for_stock_entry(doc)
-		)
-		dyeing_wo, dyeing_po = compute_dyeing_trace(doc, row)
-		origin = "Work Order" if dyeing_wo else "Purchase Order" if dyeing_po else None
-		rule = find_rule(item_type, process, mode, origin)
+		rule, dyeing_wo, dyeing_po = resolve_rule_for_row(doc, row, mode)
 		if not rule:
 			continue
 
@@ -609,17 +624,7 @@ def lock_batches(doc, method=None):
 		if row.get("batch_no"):
 			continue  # already set (manual override) — don't touch it
 
-		item_type = get_item_type(row.item_code)
-		process = normalize_process_stage(
-			get_process_for_purchase_receipt(row, doc)
-			if doc.doctype == "Purchase Receipt"
-			else get_process_for_subcontracting_receipt(row, doc)
-			if doc.doctype == "Subcontracting Receipt"
-			else get_process_for_stock_entry(doc)
-		)
-		dyeing_wo, dyeing_po = compute_dyeing_trace(doc, row)
-		origin = "Work Order" if dyeing_wo else "Purchase Order" if dyeing_po else None
-		rule = find_rule(item_type, process, mode, origin)
+		rule, dyeing_wo, dyeing_po = resolve_rule_for_row(doc, row, mode)
 		if not rule:
 			continue
 
