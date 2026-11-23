@@ -118,15 +118,6 @@
   },
   {
     "doctype": "Batch Naming Rule",
-    "name": "Dyeing Inhouse Finishing Subcontract",
-    "criteria": "Dyeing Inhouse Finishing Subcontract",
-    "item_type": "Fabric",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-F",
-    "process_stage": "Finishing"
-  },
-  {
-    "doctype": "Batch Naming Rule",
     "name": "Dyeing Inhouse Finishing Inhouse",
     "criteria": "Dyeing Inhouse Finishing Inhouse",
     "item_type": "Fabric",
@@ -221,7 +212,7 @@
     "criteria": "Finished Collar Subcontracting",
     "item_type": "Collar",
     "mode": "Subcontract",
-    "template": "{INDENT}/{DYEING_SUPPLIER_CODE}/{DYEING_PO_NO}-C{SEQ}-F",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-C{SEQ}-F",
     "process_stage": "Finishing"
   },
   {
@@ -230,7 +221,7 @@
     "criteria": "Finished Cuff Subcontracting",
     "item_type": "Cuff",
     "mode": "Subcontract",
-    "template": "{INDENT}/{DYEING_SUPPLIER_CODE}/{DYEING_PO_NO}-U{SEQ}-F",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-U{SEQ}-F",
     "process_stage": "Finishing"
   },
   {
@@ -329,9 +320,9 @@
     "criteria": "Dried/Squeezed Collar Subcontracting",
     "item_type": "Collar",
     "mode": "Subcontract",
-    "template": "{INDENT}/{DYEING_SUPPLIER_CODE}/{DYEING_PO_NO}-C{SEQ}-DR",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-C{SEQ}-DR",
     "process_stage": "DRYER",
-    "origin": "Purchase Order"
+    "origin": null
   },
   {
     "doctype": "Batch Naming Rule",
@@ -339,49 +330,9 @@
     "criteria": "Dried/Squeezed Cuff Subcontracting",
     "item_type": "Cuff",
     "mode": "Subcontract",
-    "template": "{INDENT}/{DYEING_SUPPLIER_CODE}/{DYEING_PO_NO}-U{SEQ}-DR",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-U{SEQ}-DR",
     "process_stage": "DRYER",
-    "origin": "Purchase Order"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Dried/Squeezed Collar Subcontracting (Inhouse Dyed)",
-    "criteria": "Dried/Squeezed Collar Subcontracting (Inhouse Dyed)",
-    "item_type": "Collar",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-C{SEQ}-DR",
-    "process_stage": "DRYER",
-    "origin": "Work Order"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Dried/Squeezed Cuff Subcontracting (Inhouse Dyed)",
-    "criteria": "Dried/Squeezed Cuff Subcontracting (Inhouse Dyed)",
-    "item_type": "Cuff",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-U{SEQ}-DR",
-    "process_stage": "DRYER",
-    "origin": "Work Order"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Finished Collar Subcontracting (Inhouse Dyed)",
-    "criteria": "Finished Collar Subcontracting (Inhouse Dyed)",
-    "item_type": "Collar",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-C{SEQ}-F",
-    "process_stage": "Finishing",
-    "origin": "Work Order"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Finished Cuff Subcontracting (Inhouse Dyed)",
-    "criteria": "Finished Cuff Subcontracting (Inhouse Dyed)",
-    "item_type": "Cuff",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-U{SEQ}-F",
-    "process_stage": "Finishing",
-    "origin": "Work Order"
+    "origin": null
   },
   {
     "doctype": "Batch Naming Rule",
@@ -654,5 +605,14 @@
     "mode": "Purchase",
     "template": "{SUPPLIER_CODE}/{SUPPLIER_PO_NO}/{SUPPLIERS_BATCH_NO}",
     "process_stage": "Purchase"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Finished Fabric Subcontract",
+    "criteria": "Finished Fabric Subcontract",
+    "item_type": "Fabric",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-F",
+    "process_stage": "Finishing"
   }
 ]

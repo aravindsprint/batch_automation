@@ -4,3 +4,4 @@
 batch_automation.patches.set_yarn_item_type
 batch_automation.patches.retire_rules_2026_11
 batch_automation.patches.set_item_types_2026_11
+batch_automation.patches.retire_rules_2026_11_b
