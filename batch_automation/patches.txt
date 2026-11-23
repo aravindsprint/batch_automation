@@ -1,3 +1,4 @@
 [pre_model_sync]
 
 [post_model_sync]
+batch_automation.patches.set_yarn_item_type
