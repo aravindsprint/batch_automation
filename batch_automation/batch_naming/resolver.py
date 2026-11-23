@@ -76,6 +76,7 @@ def get_item_type(item_code):
 # purchase Operation that exists is plain "PURCHASE", so for these item types
 # the stage has to be worked out from the item instead (see below).
 PURCHASE_STAGED_ITEM_TYPES = ("Fabric", "Collar", "Cuff")
+PURCHASE_ANY_PROCESS_ITEM_TYPES = ("Chemicals", "Dyes")
 
 
 def get_process_for_purchase_receipt(pr_item_row, pr_doc):
@@ -84,6 +85,11 @@ def get_process_for_purchase_receipt(pr_item_row, pr_doc):
 	if not po:
 		return None
 	raw = frappe.db.get_value("Purchase Order", po, "process")
+
+	# Chemicals and dyes are always named as a purchase, even when the PO carries a
+	# production process such as DYEING (confirmed by Aravind, 2026-11-23).
+	if get_item_type(pr_item_row.get("item_code")) in PURCHASE_ANY_PROCESS_ITEM_TYPES:
+		return "Purchase"
 
 	# Plain "PURCHASE" stands for Greige / Inspected / Finished Purchase
 	# (Aravind, 2026-09-19). Pick the stage from the item:
@@ -123,6 +129,21 @@ def get_process_for_purchase_receipt(pr_item_row, pr_doc):
 # should be treated as the Knitting stage.
 PROCESS_STAGE_KEYWORDS = [
 	("KNITTING", "Knitting"),
+	# Confirmed by Aravind (2026-11-23): a combined job that includes dyeing is named as
+	# dyeing (it also stamps the dyeing reference on the batch for later stages).
+	("DYEING", "Dyeing"),
+	("PEACH", "Peach Finishing"),
+	("HEAT SETTING", "Heat Setting"),
+	("HEATSETTING", "Heat Setting"),
+	("STENTER", "Finishing"),  # RE STENTERING, STENTER FINISHING, HOT WASHING + STENTER FINISHING
+	("COMPACTING", "Finishing"),
+	("RELAX DRYER", "Finishing"),
+	("WASH", "Washing"),  # HOT WASH, WASHING, CAUSTIC WASHING
+	("RE PROCESS", "Reprocess"),
+	("REPROCESS", "Reprocess"),
+	("BONDING", "Bonding"),
+	("BRUSHING", "Brushing"),
+	("REWINDING", "Rewinding"),
 ]
 
 # Exact (whole-string, case-insensitive) mappings, checked BEFORE the keyword
@@ -256,11 +277,15 @@ def get_rule(item_type, process, mode, origin=None):
 	if len(general) == 1:
 		return frappe.get_cached_doc("Batch Naming Rule", general[0].name)
 
-	frappe.throw(
-		f"Multiple Batch Naming Rule rows match item_type={item_type}, "
-		f"process={process}, mode={mode}, and none has origin='{origin}' "
-		f"set to disambiguate. Set the 'origin' field on the correct row."
+	# Can't tell which rule applies (typically: origin unknown because the consumed
+	# batch carries no dyeing reference). Don't block the document - leave Batch No
+	# for the user and say why.
+	frappe.msgprint(
+		f"Batch No was not auto-generated for a {item_type} row ({process}, {mode}): "
+		f"more than one Batch Naming Rule fits and the dyeing origin could not be traced.",
+		title="Batch automation", indicator="orange", alert=True,
 	)
+	return None
 
 
 # ---------------------------------------------------------------------------
@@ -358,7 +383,7 @@ def resolve_dyeing_purchase_order(scr_item_row, scr_doc):
 	if not po:
 		return None
 	process = frappe.db.get_value("Purchase Order", po, "process")
-	if process and process.upper() == "DYEING":
+	if is_dyeing_operation(process):
 		return po
 	return None
 
@@ -407,6 +432,10 @@ def resolve_tokens(doc, item_row, rule, seq_value, dyeing_wo, dyeing_po):
 
 	# WORK ORDER NO — Stock Entry's own Work Order
 	tokens["WORK_ORDER_NO"] = strip_doc_prefix(doc.get("work_order")) or ""
+	# WORK ORDER — the full Work Order name ("WO/26/12741"). In-house batches are named
+	# "{project}/{work order}/..." so the knit app's "From Work Order" pick list, which
+	# only lists batches starting with "{project}/{work order}/", finds them.
+	tokens["WORK_ORDER"] = doc.get("work_order") or ""
 
 	# PURCHASE ORDER NO / SUPPLIER PO NO — the linked Purchase Order's own
 	# name (confirmed: not the Subcontracting Order's own name)
