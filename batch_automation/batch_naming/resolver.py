@@ -615,9 +615,11 @@ def compute_preview(doc, method=None):
 			warn_empty_tokens(row, rule, empty)
 			continue
 		name = build_batch_name(rule.template, tokens)
-		# same name as an earlier output row of this entry for another item -> co-product name
-		if any(r is not row and r.item_code != row.item_code and r.get("custom_computed_batch_no") == name
-		       for r in eligible_rows(doc)):
+		# same name as an EARLIER output row of this entry for another item -> co-product name
+		# (only earlier rows: later rows still hold the previous save's preview)
+		rows = eligible_rows(doc)
+		earlier = rows[: next(i for i, r in enumerate(rows) if r is row)]
+		if any(r.item_code != row.item_code and r.get("custom_computed_batch_no") == name for r in earlier):
 			name = co_product_batch_name(name, row.item_code)
 		row.custom_computed_batch_no = name
 
