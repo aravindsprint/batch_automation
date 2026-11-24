@@ -37,24 +37,6 @@
   },
   {
     "doctype": "Batch Naming Rule",
-    "name": "Greige Collar Inhouse Knitting",
-    "criteria": "Greige Collar Inhouse Knitting",
-    "item_type": "Collar",
-    "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{WORK_ORDER_NO}-C{SEQ}",
-    "process_stage": "Knitting"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Greige Cuff Inhouse Knitting",
-    "criteria": "Greige Cuff Inhouse Knitting",
-    "item_type": "Cuff",
-    "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{WORK_ORDER_NO}-U{SEQ}",
-    "process_stage": "Knitting"
-  },
-  {
-    "doctype": "Batch Naming Rule",
     "name": "Greige Collar Subcontract Knitting",
     "criteria": "Greige Collar Subcontract Knitting",
     "item_type": "Collar",
@@ -73,15 +55,6 @@
   },
   {
     "doctype": "Batch Naming Rule",
-    "name": "Greige Fabric Inhouse Knitting",
-    "criteria": "Greige Fabric Inhouse Knitting",
-    "item_type": "Fabric",
-    "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{WORK_ORDER_NO}",
-    "process_stage": "Knitting"
-  },
-  {
-    "doctype": "Batch Naming Rule",
     "name": "Greige Fabric Subcontract Knitting",
     "criteria": "Greige Fabric Subcontract Knitting",
     "item_type": "Fabric",
@@ -95,7 +68,7 @@
     "criteria": "Heat Setting Fabric Inhouse",
     "item_type": "Fabric",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{WORK_ORDER_NO}",
+    "template": "{INDENT}/{WORK_ORDER}/HS",
     "process_stage": "Heat Setting"
   },
   {
@@ -113,7 +86,7 @@
     "criteria": "Peach Finishing Fabric Inhouse",
     "item_type": "Fabric",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{WORK_ORDER_NO}",
+    "template": "{INDENT}/{WORK_ORDER}/PF",
     "process_stage": "Peach Finishing"
   },
   {
@@ -140,17 +113,8 @@
     "criteria": "Dyeing Only Inhouse",
     "item_type": "Fabric",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-D",
+    "template": "{INDENT}/{WORK_ORDER}/D",
     "process_stage": "Dyeing"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Dyeing Inhouse Finishing Subcontract",
-    "criteria": "Dyeing Inhouse Finishing Subcontract",
-    "item_type": "Fabric",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-F",
-    "process_stage": "Finishing"
   },
   {
     "doctype": "Batch Naming Rule",
@@ -158,7 +122,7 @@
     "criteria": "Dyeing Inhouse Finishing Inhouse",
     "item_type": "Fabric",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-F",
+    "template": "{INDENT}/{WORK_ORDER}/F",
     "process_stage": "Finishing"
   },
   {
@@ -167,7 +131,7 @@
     "criteria": "Inspection Completed Fabric Inhouse",
     "item_type": "Fabric",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-S",
+    "template": "{INDENT}/{WORK_ORDER}/S",
     "process_stage": "Inspection"
   },
   {
@@ -248,7 +212,7 @@
     "criteria": "Finished Collar Subcontracting",
     "item_type": "Collar",
     "mode": "Subcontract",
-    "template": "{INDENT}/{DYEING_SUPPLIER_CODE}/{DYEING_PO_NO}-C{SEQ}-F",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-C{SEQ}-F",
     "process_stage": "Finishing"
   },
   {
@@ -257,7 +221,7 @@
     "criteria": "Finished Cuff Subcontracting",
     "item_type": "Cuff",
     "mode": "Subcontract",
-    "template": "{INDENT}/{DYEING_SUPPLIER_CODE}/{DYEING_PO_NO}-U{SEQ}-F",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-U{SEQ}-F",
     "process_stage": "Finishing"
   },
   {
@@ -284,7 +248,7 @@
     "criteria": "Dyed Collar Inhouse",
     "item_type": "Collar",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{WORK_ORDER_NO}-C{SEQ}-D",
+    "template": "{INDENT}/{WORK_ORDER}/C{SEQ}-D",
     "process_stage": "Dyeing"
   },
   {
@@ -293,7 +257,7 @@
     "criteria": "Dyed Cuff Inhouse",
     "item_type": "Cuff",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{WORK_ORDER_NO}-U{SEQ}-D",
+    "template": "{INDENT}/{WORK_ORDER}/U{SEQ}-D",
     "process_stage": "Dyeing"
   },
   {
@@ -302,7 +266,7 @@
     "criteria": "Finished Collar Inhouse Dyed",
     "item_type": "Collar",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-C{SEQ}-F",
+    "template": "{INDENT}/{WORK_ORDER}/C{SEQ}-F",
     "process_stage": "Finishing"
   },
   {
@@ -311,7 +275,7 @@
     "criteria": "Finished Cuff Inhouse Dyed",
     "item_type": "Cuff",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-U{SEQ}-F",
+    "template": "{INDENT}/{WORK_ORDER}/U{SEQ}-F",
     "process_stage": "Finishing"
   },
   {
@@ -320,7 +284,7 @@
     "criteria": "Inspected Collar From Inhouse Dyeing",
     "item_type": "Collar",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-C{SEQ}-S",
+    "template": "{INDENT}/{WORK_ORDER}/C{SEQ}-S",
     "process_stage": "Inspection"
   },
   {
@@ -329,7 +293,7 @@
     "criteria": "Inspected Cuff From Inhouse Dyeing",
     "item_type": "Cuff",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-U{SEQ}-S",
+    "template": "{INDENT}/{WORK_ORDER}/U{SEQ}-S",
     "process_stage": "Inspection"
   },
   {
@@ -338,7 +302,7 @@
     "criteria": "Printing Fabric Inhouse",
     "item_type": "Fabric",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{PRINTING_WORK_ORDER_NO}-P",
+    "template": "{INDENT}/{WORK_ORDER}/P",
     "process_stage": "Printing"
   },
   {
@@ -347,17 +311,8 @@
     "criteria": "Inspected Printed Fabric Inhouse",
     "item_type": "Fabric",
     "mode": "Inhouse",
-    "template": "{INDENT}/{PSS}/{PRINTING_WORK_ORDER_NO}-S",
+    "template": "{INDENT}/{WORK_ORDER}/S",
     "process_stage": "Printing Inspection"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Chemical Dyes Purchase",
-    "criteria": "Chemical Dyes Purchase",
-    "item_type": "Chemical-Dye",
-    "mode": "Purchase",
-    "template": "{SUPPLIER_CODE}/{SUPPLIER_PO_NO}/{SUPPLIERS_BATCH_NO}",
-    "process_stage": "Purchase"
   },
   {
     "doctype": "Batch Naming Rule",
@@ -365,9 +320,9 @@
     "criteria": "Dried/Squeezed Collar Subcontracting",
     "item_type": "Collar",
     "mode": "Subcontract",
-    "template": "{INDENT}/{DYEING_SUPPLIER_CODE}/{DYEING_PO_NO}-C{SEQ}-DR",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-C{SEQ}-DR",
     "process_stage": "DRYER",
-    "origin": "Purchase Order"
+    "origin": null
   },
   {
     "doctype": "Batch Naming Rule",
@@ -375,49 +330,9 @@
     "criteria": "Dried/Squeezed Cuff Subcontracting",
     "item_type": "Cuff",
     "mode": "Subcontract",
-    "template": "{INDENT}/{DYEING_SUPPLIER_CODE}/{DYEING_PO_NO}-U{SEQ}-DR",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-U{SEQ}-DR",
     "process_stage": "DRYER",
-    "origin": "Purchase Order"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Dried/Squeezed Collar Subcontracting (Inhouse Dyed)",
-    "criteria": "Dried/Squeezed Collar Subcontracting (Inhouse Dyed)",
-    "item_type": "Collar",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-C{SEQ}-DR",
-    "process_stage": "DRYER",
-    "origin": "Work Order"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Dried/Squeezed Cuff Subcontracting (Inhouse Dyed)",
-    "criteria": "Dried/Squeezed Cuff Subcontracting (Inhouse Dyed)",
-    "item_type": "Cuff",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-U{SEQ}-DR",
-    "process_stage": "DRYER",
-    "origin": "Work Order"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Finished Collar Subcontracting (Inhouse Dyed)",
-    "criteria": "Finished Collar Subcontracting (Inhouse Dyed)",
-    "item_type": "Collar",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-C{SEQ}-F",
-    "process_stage": "Finishing",
-    "origin": "Work Order"
-  },
-  {
-    "doctype": "Batch Naming Rule",
-    "name": "Finished Cuff Subcontracting (Inhouse Dyed)",
-    "criteria": "Finished Cuff Subcontracting (Inhouse Dyed)",
-    "item_type": "Cuff",
-    "mode": "Subcontract",
-    "template": "{INDENT}/{PSS}/{DYEING_WORK_ORDER_NO}-U{SEQ}-F",
-    "process_stage": "Finishing",
-    "origin": "Work Order"
+    "origin": null
   },
   {
     "doctype": "Batch Naming Rule",
@@ -447,5 +362,257 @@
     "mode": "Subcontract",
     "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}",
     "process_stage": "KNITTING + POLYBAG COVER PACKING"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Washed Fabric Subcontract",
+    "criteria": "Washed Fabric Subcontract",
+    "item_type": "Fabric",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-W",
+    "process_stage": "Washing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Washed Fabric Inhouse",
+    "criteria": "Washed Fabric Inhouse",
+    "item_type": "Fabric",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/W",
+    "process_stage": "Washing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Washed Collar Subcontract",
+    "criteria": "Washed Collar Subcontract",
+    "item_type": "Collar",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-C{SEQ}-W",
+    "process_stage": "Washing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Washed Collar Inhouse",
+    "criteria": "Washed Collar Inhouse",
+    "item_type": "Collar",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/C{SEQ}-W",
+    "process_stage": "Washing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Washed Cuff Subcontract",
+    "criteria": "Washed Cuff Subcontract",
+    "item_type": "Cuff",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-U{SEQ}-W",
+    "process_stage": "Washing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Washed Cuff Inhouse",
+    "criteria": "Washed Cuff Inhouse",
+    "item_type": "Cuff",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/U{SEQ}-W",
+    "process_stage": "Washing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Reprocessed Fabric Subcontract",
+    "criteria": "Reprocessed Fabric Subcontract",
+    "item_type": "Fabric",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-R",
+    "process_stage": "Reprocess"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Reprocessed Fabric Inhouse",
+    "criteria": "Reprocessed Fabric Inhouse",
+    "item_type": "Fabric",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/R",
+    "process_stage": "Reprocess"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Reprocessed Collar Subcontract",
+    "criteria": "Reprocessed Collar Subcontract",
+    "item_type": "Collar",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-C{SEQ}-R",
+    "process_stage": "Reprocess"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Reprocessed Collar Inhouse",
+    "criteria": "Reprocessed Collar Inhouse",
+    "item_type": "Collar",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/C{SEQ}-R",
+    "process_stage": "Reprocess"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Reprocessed Cuff Subcontract",
+    "criteria": "Reprocessed Cuff Subcontract",
+    "item_type": "Cuff",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-U{SEQ}-R",
+    "process_stage": "Reprocess"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Reprocessed Cuff Inhouse",
+    "criteria": "Reprocessed Cuff Inhouse",
+    "item_type": "Cuff",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/U{SEQ}-R",
+    "process_stage": "Reprocess"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Bonded Fabric Subcontract",
+    "criteria": "Bonded Fabric Subcontract",
+    "item_type": "Fabric",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-BD",
+    "process_stage": "Bonding"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Bonded Fabric Inhouse",
+    "criteria": "Bonded Fabric Inhouse",
+    "item_type": "Fabric",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/BD",
+    "process_stage": "Bonding"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Bonded Collar Subcontract",
+    "criteria": "Bonded Collar Subcontract",
+    "item_type": "Collar",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-C{SEQ}-BD",
+    "process_stage": "Bonding"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Bonded Collar Inhouse",
+    "criteria": "Bonded Collar Inhouse",
+    "item_type": "Collar",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/C{SEQ}-BD",
+    "process_stage": "Bonding"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Bonded Cuff Subcontract",
+    "criteria": "Bonded Cuff Subcontract",
+    "item_type": "Cuff",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-U{SEQ}-BD",
+    "process_stage": "Bonding"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Bonded Cuff Inhouse",
+    "criteria": "Bonded Cuff Inhouse",
+    "item_type": "Cuff",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/U{SEQ}-BD",
+    "process_stage": "Bonding"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Brushed Fabric Subcontract",
+    "criteria": "Brushed Fabric Subcontract",
+    "item_type": "Fabric",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-BR",
+    "process_stage": "Brushing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Brushed Fabric Inhouse",
+    "criteria": "Brushed Fabric Inhouse",
+    "item_type": "Fabric",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/BR",
+    "process_stage": "Brushing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Brushed Collar Subcontract",
+    "criteria": "Brushed Collar Subcontract",
+    "item_type": "Collar",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-C{SEQ}-BR",
+    "process_stage": "Brushing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Brushed Collar Inhouse",
+    "criteria": "Brushed Collar Inhouse",
+    "item_type": "Collar",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/C{SEQ}-BR",
+    "process_stage": "Brushing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Brushed Cuff Subcontract",
+    "criteria": "Brushed Cuff Subcontract",
+    "item_type": "Cuff",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-U{SEQ}-BR",
+    "process_stage": "Brushing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Brushed Cuff Inhouse",
+    "criteria": "Brushed Cuff Inhouse",
+    "item_type": "Cuff",
+    "mode": "Inhouse",
+    "template": "{INDENT}/{WORK_ORDER}/U{SEQ}-BR",
+    "process_stage": "Brushing"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Rewound Yarn Subcontract",
+    "criteria": "Rewound Yarn Subcontract",
+    "item_type": "Yarn",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-RW",
+    "process_stage": "Rewinding"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Chemicals Purchase",
+    "criteria": "Chemicals Purchase",
+    "item_type": "Chemicals",
+    "mode": "Purchase",
+    "template": "{SUPPLIER_CODE}/{SUPPLIER_PO_NO}/{SUPPLIERS_BATCH_NO}",
+    "process_stage": "Purchase"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Dyes Purchase",
+    "criteria": "Dyes Purchase",
+    "item_type": "Dyes",
+    "mode": "Purchase",
+    "template": "{SUPPLIER_CODE}/{SUPPLIER_PO_NO}/{SUPPLIERS_BATCH_NO}",
+    "process_stage": "Purchase"
+  },
+  {
+    "doctype": "Batch Naming Rule",
+    "name": "Finished Fabric Subcontract",
+    "criteria": "Finished Fabric Subcontract",
+    "item_type": "Fabric",
+    "mode": "Subcontract",
+    "template": "{INDENT}/{SUPPLIER_CODE}/{PURCHASE_ORDER_NO}-F",
+    "process_stage": "Finishing"
   }
 ]
